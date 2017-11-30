@@ -3,7 +3,7 @@
 #
 # VERSION               0.3.1
 
-# this version provides 
+# this version provides
 #	modified ruven iipsrv (ported changes from my fork of cytomine) with
 #		misc bug fixes in resolution calculations.  since v0.3
 #		fixed cache key hash. since v0.1.1
@@ -26,6 +26,10 @@ MAINTAINER Ganesh Iyer "lastlegion@gmail.com"
 RUN apt-get -q update
 RUN apt-get -q -y upgrade
 RUN apt-get -q -y dist-upgrade
+RUN apt-get clean
+RUN apt-get -q update
+
+# OpenSSH server
 RUN apt-get -q -y install openssh-server
 
 ### need build tools for building openslide and later iipsrv
@@ -50,11 +54,11 @@ RUN a2enmod rewrite
 # Update the PHP.ini file, enable <? ?> tags and quieten logging.
 RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php5/apache2/php.ini
 RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php5/apache2/php.ini
+RUN sed -i "s/; max_input_vars = 1000/max_input_vars = 100000/" /etc/php5/apache2/php.ini
 
 
-
-
-## get our configuration files00/" 
+## get our configuration files
+WORKDIR /root/src
 RUN git clone https://tcpan@bitbucket.org/tcpan/iip-openslide-docker.git
 
 ## replace apache's default fcgi config with ours.
@@ -105,10 +109,10 @@ WORKDIR /root/src
 ## get my fork from openslide source cdoe
 RUN git clone https://bitbucket.org/tcpan/openslide.git
 
-## build openslide 
+## build openslide
 WORKDIR /root/src/openslide
 RUN git checkout tags/v0.3.1
-RUN autoreconf -i 
+RUN autoreconf -i
 #RUN ./configure --enable-static --enable-shared=no
 # may need to set OPENJPEG_CFLAGS='-I/usr/local/include' and OPENJPEG_LIBS='-L/usr/local/lib -lopenjp2'
 # and the corresponding TIFF flags and libs to where bigtiff lib is installed.
@@ -147,22 +151,48 @@ RUN sed -i "2i extension=mongo.so" /etc/php5/apache2/php.ini
 #CMD ["/usr/sbin/sshd", "-D"]
 #COPY html /var/www/html/
 RUN rm -rf /var/www/html
-RUN git clone -b 1.0.0rc0  https://github.com/camicroscope/Security.git /var/www/html
+RUN git clone -b release  https://github.com/camicroscope/Security.git /var/www/html
 RUN git clone -b release https://github.com/camicroscope/caMicroscope.git /var/www/html/camicroscope
-
-
 
 #RUN service apache2 start
 
-COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
+### moving this closer to the end of the build so we can change and quickly rebuild
+#COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
 
 RUN pear install http_request2
-COPY run.sh /root/run.sh
+#COPY run.sh /root/run.sh
+### Seem to need to do an update in order to successfully install default-jdk
+RUN apt-get update && apt-get -y upgrade
 RUN  apt-get install -y default-jdk
 
 COPY html/FlexTables/ /var/www/html/FlexTables/
-COPY html/featurescapeapps/ /var/www/html/featurescapeapps/ 
+COPY html/featurescapeapps/ /var/www/html/featurescapeapps/
 
-CMD ["sh", "/root/run.sh"]
+### Install gcsfuse
+RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-`lsb_release -c -s` main" | tee /etc/apt/sources.list.d/gcsfuse.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get -y update
+RUN apt-get -y install gcsfuse
+
+COPY run.sh /root/run.sh
+
+### Temporary. Remove next four lines after the above git clones pull from our repos
+RUN rm -rf /var/www/html/camicroscope
+RUN mkdir -p /var/www/html/camicroscope
+COPY html/config/security_config.php /var/www/html/config
+COPY html/camicroscope /var/www/html/camicroscope
+
+### Do we need this to ru in kubernetes?
+EXPOSE 80
+
+### Mount these buckets under /data/images
+ENV GCSFUSEMOUNTS=isb-cgc-open,svs-images,svs-images-mr
+
+### Moved this here from earlier so we can experiment with various settings and quicly rebuild
+COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
+
+#cmd ["sh", "/root/run.sh"]
+### Script requires bash
+CMD ["/bin/bash", "/root/run.sh"]
 
 #CMD service apache2 start && tail -F /var/log/apache2/access.log
