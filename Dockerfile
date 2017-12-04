@@ -192,7 +192,7 @@ RUN git clone -b isb-cgc-webapp https://github.com/isb-cgc/caMicroscope.git /var
 #EXPOSE 80
 
 ### Mount these buckets under /data/images
-ENV GCSFUSEMOUNTS=isb-cgc-open,svs-images,svs-images-mr
+ENV GCSFUSEMOUNTS=isb-cgc-open,imaging-west
 
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
