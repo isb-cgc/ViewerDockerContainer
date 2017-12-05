@@ -176,26 +176,21 @@ RUN apt-get -y install gcsfuse
 
 COPY run.sh /root/run.sh
 
-### Temporary. Remove next four lines after the above git clones pull from our repos
-#RUN rm -rf /var/www/html/camicroscope
-#RUN mkdir -p /var/www/html/camicroscope
-#COPY html/config/security_config.php /var/www/html/config
-#COPY html/camicroscope /var/www/html/camicroscope
-
 RUN rm -rf /var/www/html
 ### This version disables security checking
 RUN git clone -b camicroscope_release  https://github.com/camicroscope/Security.git /var/www/html
 ### Clone the isb-cgc version
 RUN git clone -b isb-cgc-webapp https://github.com/isb-cgc/caMicroscope.git /var/www/html/camicroscope
 
-### Do we need this to run in kubernetes?
-#EXPOSE 80
-
 ### Mount these buckets under /data/images
 ENV GCSFUSEMOUNTS=isb-cgc-open,imaging-west
 
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
+
+### Change the port on which apache2 listens
+sed -i 's/Listen 6112/Listen 80/' /etc/apache2/ports.conf
+sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:5001>/' /etc/apache2/sites-available/000-default.conf
 
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
