@@ -1,4 +1,4 @@
-# DOCKER-VERSION 0.3.4
+1;95;0c# DOCKER-VERSION 0.3.4
 # sshd, openjpeg2, openslide, iipsrv, apache
 #
 # VERSION               0.3.1
@@ -187,6 +187,9 @@ ENV GCSFUSEMOUNTS=isb-cgc-open,imaging-west
 
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
+
+### Create a directory for stashing HTTPS certs
+RUN mkdir /etc/apache2/ssl
 
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
