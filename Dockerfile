@@ -188,10 +188,6 @@ ENV GCSFUSEMOUNTS=isb-cgc-open,imaging-west
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
 
-### Change the port on which apache2 listens
-#RUN sed -i 's/Listen 6112/Listen 80/' /etc/apache2/ports.conf
-#RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:5001>/' /etc/apache2/sites-available/000-default.conf
-
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
 CMD ["/bin/bash", "/root/run.sh"]
