@@ -192,6 +192,9 @@ COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcg
 #RUN sed -i 's/Listen 6112/Listen 80/' /etc/apache2/ports.conf
 #RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:5001>/' /etc/apache2/sites-available/000-default.conf
 
+### Create a directory for stashing HTTPS certs
+RUN mkdir /etc/apache2/ssl
+
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
 CMD ["/bin/bash", "/root/run.sh"]
