@@ -4,6 +4,7 @@
 #cd ../bindaas/bin
 #sh startup.sh &
 
+### gcsfuse-mount specified GCS buckets
 array=(${GCSFUSEMOUNTS//,/ })
 for e in "${array[@]}"; 
 do 
@@ -11,6 +12,14 @@ do
     chown www-data:www-data /data/images/$e
     /bin/su -s /bin/bash -c "gcsfuse $e /data/images/$e" www-data; 
 done
+
+### Configure apache2 to serve HTTPS
+sed -i 's/ServerAdmin.*/ServerAdmin '$SERVER_ADMIN'/' /etc/apache2/sites-available/default-ssl.conf
+sed -i '/ServerAdmin/a \ServerName '$SERVER_NAME'' /etc/apache2/sites-available/default-ssl.conf
+sed -i '/ServerName/a \ServerAlias '$SERVER_ALIAS'' /etc/apache2/sites-available/default-ssl.conf
+sed -i 's/SSLCertificateFile.*/SSLCertificateFile \/etc\/apache2\/ssl\/apache.crt/' /etc/apache2/sites-available/default-ssl.conf
+sed -i 's/SSLCertificateKeyFile.*/SSLCertificateKeyFile \/etc\/apache2/ssl\/apache.key/' /etc/apache2/sites-available/default-ssl.conf
+a2ensite default-ssl.conf
 
 rm -f /var/run/apache2.pid
 service apache2 start
