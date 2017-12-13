@@ -1,4 +1,4 @@
-1;95;0c# DOCKER-VERSION 0.3.4
+# DOCKER-VERSION 0.3.4
 # sshd, openjpeg2, openslide, iipsrv, apache
 #
 # VERSION               0.3.1
