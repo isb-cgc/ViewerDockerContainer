@@ -21,6 +21,9 @@ sed -i 's/SSLCertificateFile.*/SSLCertificateFile \/etc\/apache2\/ssl\/apache.cr
 sed -i 's/SSLCertificateKeyFile.*/SSLCertificateKeyFile \/etc\/apache2/ssl\/apache.key/' /etc/apache2/sites-available/default-ssl.conf
 a2ensite default-ssl.conf
 
+### Configure which website this VM goes to for slide metadata
+sed -i 's|mvm-dot-isb-cgc.appspot.com|'$WEBAPP'|' /var/www/html/camicroscope/api/Configuration/config.php
+
 rm -f /var/run/apache2.pid
 service apache2 start
 htpasswd -bc /etc/apache2/.htpasswd admin quip2017
