@@ -1,4 +1,4 @@
-1;95;0c# DOCKER-VERSION 0.3.4
+# DOCKER-VERSION 0.3.4
 # sshd, openjpeg2, openslide, iipsrv, apache
 #
 # VERSION               0.3.1
@@ -75,7 +75,7 @@ COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY apache2.conf /etc/apache2/apache2.conf
 
 ## expose some ports
-EXPOSE 80
+#EXPOSE 80
 #EXPOSE 443
 
 ## setup a mount point for images.  - this is external to the docker container.
