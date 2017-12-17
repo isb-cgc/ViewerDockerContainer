@@ -141,8 +141,8 @@ RUN cp /root/src/iipsrv/src/iipsrv.fcgi /var/www/localhost/fcgi-bin/
 # Security and authentication
 RUN apt-get update && sudo apt-get -y upgrade
 RUN apt-get -q -y install php5-dev
-RUN pecl install mongo
-RUN sed -i "2i extension=mongo.so" /etc/php5/apache2/php.ini
+#RUN pecl install mongo
+#RUN sed -i "2i extension=mongo.so" /etc/php5/apache2/php.ini
 
 
 
