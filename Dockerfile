@@ -107,11 +107,13 @@ RUN make install
 ### Openslide
 WORKDIR /root/src
 ## get my fork from openslide source cdoe
-RUN git clone https://bitbucket.org/tcpan/openslide.git
+RUN git clone https://github.com/bcli4d/openslide.git
+
 
 ## build openslide
 WORKDIR /root/src/openslide
-RUN git checkout tags/v0.3.1
+#RUN git checkout tags/v0.3.1
+RUN git checkout noclose
 RUN autoreconf -i
 #RUN ./configure --enable-static --enable-shared=no
 # may need to set OPENJPEG_CFLAGS='-I/usr/local/include' and OPENJPEG_LIBS='-L/usr/local/lib -lopenjp2'
