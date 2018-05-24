@@ -5,13 +5,13 @@
 #sh startup.sh &
 
 ### gcsfuse-mount specified GCS buckets
-array=(${GCSFUSEMOUNTS//,/ })
-for e in "${array[@]}"; 
-do 
-    mkdir -p /data/images/$e
-    chown www-data:www-data /data/images/$e
-    /bin/su -s /bin/bash -c "gcsfuse $e /data/images/$e" www-data; 
-done
+#array=(${GCSFUSEMOUNTS//,/ })
+#for e in "${array[@]}"; 
+#do 
+#    mkdir -p /data/images/$e
+#    chown www-data:www-data /data/images/$e
+#    /bin/su -s /bin/bash -c "gcsfuse $e /data/images/$e" www-data; 
+#done
 
 ### Configure apache2 to serve HTTPS
 sed -i 's/ServerAdmin.*/ServerAdmin '$SERVER_ADMIN'/' /etc/apache2/sites-available/default-ssl.conf

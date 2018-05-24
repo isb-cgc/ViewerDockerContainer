@@ -174,8 +174,6 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get -y update
 RUN apt-get -y install gcsfuse
 
-COPY run.sh /root/run.sh
-
 RUN rm -rf /var/www/html
 ### This version disables security checking
 RUN git clone -b camicroscope_release  https://github.com/camicroscope/Security.git /var/www/html
@@ -191,8 +189,12 @@ COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcg
 ### Create a directory for stashing HTTPS certs
 RUN mkdir /etc/apache2/ssl
 
+### Create directory on which to mount filestore disk
+#RUN mkdir /data/images/imaging-west
+
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
+COPY run.sh /root/run.sh
 CMD ["/bin/bash", "/root/run.sh"]
 
 #CMD service apache2 start && tail -F /var/log/apache2/access.log
