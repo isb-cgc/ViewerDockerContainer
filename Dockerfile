@@ -192,8 +192,6 @@ RUN mkdir /etc/apache2/ssl
 ### Create directory on which to mount filestore disk
 #RUN mkdir /data/images/imaging-west
 
-COPY CamicUtils.php /var/www/html/camicroscope/api/Data
-
 #cmd ["sh", "/root/run.sh"]
 ### Script requires bash
 COPY run.sh /root/run.sh
