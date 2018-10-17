@@ -14,13 +14,13 @@ do
 done
 
 ### Configure apache2 to serve HTTPS
-sed -i 's/ServerAdmin.*/ServerAdmin '$SERVER_ADMIN'/' /etc/apache2/sites-available/default-ssl.conf
-sed -i '/ServerAdmin/a \ServerName '$SERVER_NAME'' /etc/apache2/sites-available/default-ssl.conf
-sed -i '/ServerName/a \ServerAlias '$SERVER_ALIAS'' /etc/apache2/sites-available/default-ssl.conf
-sed -i 's/SSLCertificateFile.*/SSLCertificateFile \/etc\/apache2\/ssl\/camic-viewer-apache.crt/' /etc/apache2/sites-available/default-ssl.conf
-sed -i 's/SSLCertificateKeyFile.*/SSLCertificateKeyFile \/etc\/apache2\/ssl\/camic-viewer-apache.key/' /etc/apache2/sites-available/default-ssl.conf
-a2enmod ssl
-a2ensite default-ssl.conf
+#sed -i 's/ServerAdmin.*/ServerAdmin '$SERVER_ADMIN'/' /etc/apache2/sites-available/default-ssl.conf
+#sed -i '/ServerAdmin/a \ServerName '$SERVER_NAME'' /etc/apache2/sites-available/default-ssl.conf
+#sed -i '/ServerName/a \ServerAlias '$SERVER_ALIAS'' /etc/apache2/sites-available/default-ssl.conf
+#sed -i 's/SSLCertificateFile.*/SSLCertificateFile \/etc\/apache2\/ssl\/camic-viewer-apache.crt/' /etc/apache2/sites-available/default-ssl.conf
+#sed -i 's/SSLCertificateKeyFile.*/SSLCertificateKeyFile \/etc\/apache2\/ssl\/camic-viewer-apache.key/' /etc/apache2/sites-available/default-ssl.conf
+#a2enmod ssl
+#a2ensite default-ssl.conf
 
 ### Configure which website this VM goes to for slide metadata
 sed -i 's|mvm-dot-isb-cgc.appspot.com|'$WEBAPP'|' /var/www/html/camicroscope/api/Configuration/config.php
