@@ -178,7 +178,13 @@ COPY run.sh /root/run.sh
 
 RUN rm -rf /var/www/html
 ### This version disables security checking
-RUN git clone -b camicroscope_release  https://github.com/camicroscope/Security.git /var/www/html
+### The original camicroscope_release branch of the Security repo seems to have been deleted. So create
+### equivalent branch from specified commit
+RUN git clone https://github.com/camicroscope/Security.git /var/www/html
+WORKDIR /var/www/html 
+RUN git branch camicroscope_release 52c7c2959b220725734e252607b8fd3866bd4efd
+RUN git checkout camicroscope_release
+WORKDIR /root/src
 ### Clone the isb-cgc version
 RUN git clone -b isb-cgc-webapp https://github.com/isb-cgc/caMicroscope.git /var/www/html/camicroscope
 
