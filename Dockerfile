@@ -134,6 +134,9 @@ RUN ./autogen.sh
 RUN ./configure
 RUN make
 
+## creare a directory in which the goofys fuse file system will find interoperability credentials
+RUN mkdir /var/www/.aws
+
 ## create a directory for iipsrv's fcgi binary
 RUN mkdir -p /var/www/localhost/fcgi-bin/
 RUN cp /root/src/iipsrv/src/iipsrv.fcgi /var/www/localhost/fcgi-bin/
@@ -186,10 +189,10 @@ RUN git branch camicroscope_release 52c7c2959b220725734e252607b8fd3866bd4efd
 RUN git checkout camicroscope_release
 WORKDIR /root/src
 ### Clone the isb-cgc version
-RUN git clone -b isb-cgc-webapp https://github.com/isb-cgc/caMicroscope.git /var/www/html/camicroscope
+RUN git clone -b isb-cgc-webapp-gdc https://github.com/isb-cgc/caMicroscope.git /var/www/html/camicroscope
 
 ### Mount these buckets under /data/images
-ENV GCSFUSEMOUNTS=isb-cgc-open,imaging-west
+ENV GCSFUSEMOUNTS=gdc-tcga-phs000178-open
 
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
