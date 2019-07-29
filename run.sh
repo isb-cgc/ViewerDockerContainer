@@ -16,7 +16,7 @@ do
     chown www-data:www-data /data/images/$e
     #    /bin/su -s /bin/bash -c "gcsfuse $e /data/images/$e" www-data;
     ### We let goofys run in the foreground; without the -f, mounting fails
-    /bin/su -s /bin/bash -c "./goofys -f --profile google --endpoint https://storage.googleapis.com $e /data/images/$e" www-data& 
+    /bin/su -s /bin/bash -c "./goofys -f --profile google --endpoint https://storage.googleapis.com $e /data/images/$e &" www-data
 done
 
 ### Configure apache2 to serve HTTPS
