@@ -1,7 +1,7 @@
 # DOCKER-VERSION 0.3.4
 # sshd, openjpeg2, openslide, iipsrv, apache
 #
-# VERSION               0.3.1
+# VERSION               0.92
 
 # this version provides
 #	modified ruven iipsrv (ported changes from my fork of cytomine) with
@@ -16,8 +16,8 @@
 #	modified openslide
 #		using nearest neighbor except when generating virtual tiles (uses bilinear then). since v 0.3.1
 
-FROM     ubuntu:14.04
-MAINTAINER Ganesh Iyer "lastlegion@gmail.com"
+FROM     ubuntu:18.04
+MAINTAINER William Clifford "bcliffor@systemsbiology.org"
 
 # build with
 #  sudo docker build --rm=true -t="repo/imgname" .
@@ -43,18 +43,18 @@ RUN a2enmod rewrite
 RUN a2enmod fcgid
 
 ### install php
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2 apache2-utils libapache2-mod-php5 php5-mysql php5-gd php-pear php-apc php5-curl curl lynx-cur
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2 apache2-utils libapache2-mod-php7.2 php7.2-mysql php7.2-gd php-pear php-apcu php7.2-curl curl lynx-common lynx
 
 
 # Enable apache mods.
-RUN a2enmod php5
+RUN a2enmod php7.2
 RUN a2enmod rewrite
 
 
 # Update the PHP.ini file, enable <? ?> tags and quieten logging.
-RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php5/apache2/php.ini
-RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php5/apache2/php.ini
-RUN sed -i "s/; max_input_vars = 1000/max_input_vars = 100000/" /etc/php5/apache2/php.ini
+RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php/7.2/apache2/php.ini
+RUN sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.2/apache2/php.ini
+RUN sed -i "s/; max_input_vars = 1000/max_input_vars = 100000/" /etc/php/7.2/apache2/php.ini
 
 
 ## get our configuration files
@@ -91,7 +91,12 @@ EXPOSE 22
 
 
 ### prereqs for openslide
-RUN apt-get -q -y install zlib1g-dev libpng12-dev libjpeg-dev libtiff5-dev libgdk-pixbuf2.0-dev libxml2-dev libsqlite3-dev libcairo2-dev libglib2.0-dev
+# For 64-bit - Linux (Ubuntu Trusty) - Ubuntu 18.0.4
+RUN wget http://se.archive.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb
+RUN dpkg -i libpng12-0_1.2.54-1ubuntu1_amd64.deb
+
+#RUN apt-get -q -y install zlib1g-dev libpng12-dev libjpeg-dev libtiff5-dev libgdk-pixbuf2.0-dev libxml2-dev libsqlite3-dev libcairo2-dev libglib2.0-dev
+RUN apt-get -q -y install zlib1g-dev libjpeg-dev libtiff5-dev libgdk-pixbuf2.0-dev libxml2-dev libsqlite3-dev libcairo2-dev libglib2.0-dev
 
 WORKDIR /root/src
 
@@ -142,10 +147,10 @@ RUN mkdir -p /var/www/localhost/fcgi-bin/
 RUN cp /root/src/iipsrv/src/iipsrv.fcgi /var/www/localhost/fcgi-bin/
 
 # Security and authentication
-RUN apt-get update && sudo apt-get -y upgrade
-RUN apt-get -q -y install php5-dev
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get -q -y install php7.2-dev
 #RUN pecl install mongo
-#RUN sed -i "2i extension=mongo.so" /etc/php5/apache2/php.ini
+#RUN sed -i "2i extension=mongo.so" /etc/php/7.2/apache2/php.ini
 
 
 
@@ -171,11 +176,12 @@ RUN  apt-get install -y default-jdk
 COPY html/FlexTables/ /var/www/html/FlexTables/
 COPY html/featurescapeapps/ /var/www/html/featurescapeapps/
 
-### Install gcsfuse
-RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-`lsb_release -c -s` main" | tee /etc/apt/sources.list.d/gcsfuse.list
-RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN apt-get -y update
-RUN apt-get -y install gcsfuse
+#### Shouldn't need gcsfuse. Using goofys
+#### Install gcsfuse
+#RUN echo "deb http://packages.cloud.google.com/apt gcsfuse-`lsb_release -c -s` main" | tee /etc/apt/sources.list.d/gcsfuse.list
+#RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+#RUN apt-get -y update
+#RUN apt-get -y install gcsfuse
 
 COPY run.sh /root/run.sh
 
@@ -191,8 +197,9 @@ WORKDIR /root/src
 ### Clone the isb-cgc version
 RUN git clone -b isb-cgc-webapp-gdc https://github.com/isb-cgc/caMicroscope.git /var/www/html/camicroscope
 
-### Mount these buckets under /data/images
-ENV GCSFUSEMOUNTS=gdc-tcga-phs000178-open
+##### Shouldn't need gcsfuse. Using goofys
+#### Mount these buckets under /data/images
+#ENV GCSFUSEMOUNTS=gdc-tcga-phs000178-open
 
 ### Moved this here from earlier so we can experiment with various settings and quicly rebuild
 COPY apache2-iipsrv-fcgid.conf /root/src/iip-openslide-docker/apache2-iipsrv-fcgid.conf
